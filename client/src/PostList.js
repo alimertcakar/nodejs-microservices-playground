@@ -7,9 +7,10 @@ export default () => {
   const [posts, setPosts] = useState({});
 
   const fetchPosts = async () => {
-    const res = await axios.get('http://localhost:4000/posts');
+    const res = await axios.get('http://localhost:4002/posts');
 
     setPosts(res.data);
+    console.log(res.data, "posts")
   };
 
   useEffect(() => {
@@ -17,6 +18,9 @@ export default () => {
   }, []);
 
   const renderedPosts = Object.values(posts).map(post => {
+    console.log(post.comments, "post comments")
+    const postComments = post.comments ? post.comments : [];
+
     return (
       <div
         className="card"
@@ -25,7 +29,7 @@ export default () => {
       >
         <div className="card-body">
           <h3>{post.title}</h3>
-          <CommentList postId={post.id} />
+          <CommentList comments={postComments} />
           <CommentCreate postId={post.id} />
         </div>
       </div>

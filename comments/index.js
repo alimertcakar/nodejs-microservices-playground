@@ -1,6 +1,7 @@
 const express = require('express');
 const { nanoid } = require("nanoid");
 const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
 app.use(express.json());
@@ -20,9 +21,25 @@ app.post('/posts/:id/comments', (req, res) => {
 
     comments.push({ id: commentId, content });
 
+    const commentEvent = {
+        type: "CommentCreated",
+        payload: {
+            id: commentId, content, postId: req.params.id
+        }
+    }
+    axios.post("http://localhost:4003/events", commentEvent).catch(e => {
+        console.log("Event bus yanıt dönmedi.")
+    });
+
     commentsByPostId[req.params.id] = comments;
 
     res.status(201).send(comments);
+});
+
+
+app.post("/events", (req, res) => {
+    console.info("Received event " + req.body.type);
+    res.end("Ok");
 });
 
 app.listen(4001, () => {
