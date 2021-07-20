@@ -1,18 +1,15 @@
-import styled, { css } from "styled-components";
+import React from 'react';
+import PostCreate from './PostCreate';
+import PostList from './PostList';
 
-function App() {
+export default () => {
   return (
-    <DivContainer>
-      Selam
-    </DivContainer>
+    <div className="container">
+      <h1>Create Post</h1>
+      <PostCreate />
+      <hr />
+      <h1>Posts</h1>
+      <PostList />
+    </div>
   );
-}
-
-
-const DivContainer = styled.div`
-display:flex; 
-justify-content:center; 
-max-width:1200px;
-margin-top:2rem;
-`;
-export default App;
+};
