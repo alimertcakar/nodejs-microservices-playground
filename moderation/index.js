@@ -7,29 +7,44 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.post("/events", (req, res) => {
-    console.info("Received event " + req.body.type);
-    switch (req.body.type) {
+
+function handleEvent(event) {
+    switch (event.type) {
         case "CommentCreated":
             {
+                const newPayload = { ...event.payload };
+                newPayload.status = "approved";
                 const commentEvent = {
                     type: "CommentModerated",
-                    payload: {
-                        id: commentId, content, postId: req.params.id, status: "pending"
-                    }
+                    payload: newPayload
                 }
+                console.log(newPayload);
 
-                axios.post("http://localhost:4003/events", commentEvent).catch(e => {
-                    console.log("Event bus yanıt dönmedi.")
-                });
-
+                setTimeout(() => {
+                    axios.post("http://localhost:4003/events", commentEvent).catch(e => {
+                        console.log("Event bus yanıt dönmedi.")
+                    });
+                }, 15000);
             }
             break;
+        default:
     }
+
+}
+
+app.post("/events", (req, res) => {
+    console.info("Received event " + req.body.type);
+    handleEvent(req.body);
 
     res.end("Ok");
 });
 
 app.listen(4004, () => {
     console.log('Listening on 4004');
+    axios.get("http://localhost:4003/events").then(res => {
+        const data = res.data;
+        data.forEach(event => {
+            handleEvent(event);
+        });
+    });
 });

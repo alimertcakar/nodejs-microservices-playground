@@ -10,34 +10,55 @@ app.use(cors());
 const posts = {
 };
 
+
 app.get('/posts', (req, res) => {
-
-
     res.send(posts);
 });
 
-app.post("/events", (req, res) => {
-    console.info("Received event " + req.body.type);
-    switch (req.body.type) {
+
+function handleEvent(event) {
+    console.log(event.type);
+
+    switch (event.type) {
         case "PostCreated":
             {
-                const { id } = req.body.payload;
-                posts[id] = { ...req.body.payload, comments: [] };
+                const { id } = event.payload;
+                posts[id] = { ...event.payload, comments: [] };
             }
             break;
         case "CommentCreated":
             {
-                const { id, postId } = req.body.payload;
-                posts[postId].comments.push(req.body.payload);
+                const { id, postId } = event.payload;
+                posts[postId].comments.push(event.payload);
+            }
+            break;
+        case "CommentUpdated":
+            {
+                const { id, postId } = event.payload;
+                const commentIndex = posts[postId]?.comments.findIndex(val => val.id === id);
+                posts[postId].comments[commentIndex] = event.payload;
             }
             break;
         default:
     }
-    console.log(posts, "posts");
+
+
+}
+
+
+app.post("/events", (req, res) => {
+    handleEvent(req.body);
     res.end("Ok");
 });
 
 
+
 app.listen(4002, () => {
     console.log('Listening on 4002');
+    axios.get("http://localhost:4003/events").then(res => {
+        const data = res.data;
+        data.forEach(event => {
+            handleEvent(event);
+        });
+    });
 });

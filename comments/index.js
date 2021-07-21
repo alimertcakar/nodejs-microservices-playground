@@ -39,6 +39,25 @@ app.post('/posts/:id/comments', (req, res) => {
 
 app.post("/events", (req, res) => {
     console.info("Received event " + req.body.type);
+
+    switch (req.body.type) {
+        case "CommentModerated":
+            {
+                const commentEvent = {
+                    type: "CommentUpdated",
+                    payload: req.body.payload
+                }
+                setTimeout(() => {
+                    axios.post("http://localhost:4003/events", commentEvent).catch(e => {
+                        console.log("Event bus yanıt dönmedi.")
+                    });
+                }, 5000);
+            }
+            break;
+        default:
+    }
+
+
     res.end("Ok");
 });
 

@@ -7,8 +7,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+const eventLog = [];
+app.get("/events", (req, res) => {
+    res.send(eventLog);
+})
 
 app.post('/events', (req, res) => {
+    eventLog.push(req.body);
+
     axios.post("http://localhost:4000/events", req.body).catch(e => {
         console.log("4000 e istek başarısız")
     });
