@@ -24,7 +24,7 @@ app.post('/posts/:id/comments', (req, res) => {
     const commentEvent = {
         type: "CommentCreated",
         payload: {
-            id: commentId, content, postId: req.params.id
+            id: commentId, content, postId: req.params.id, status: "pending"
         }
     }
     axios.post("http://localhost:4003/events", commentEvent).catch(e => {

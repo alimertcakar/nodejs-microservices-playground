@@ -15,10 +15,14 @@ app.post('/events', (req, res) => {
     axios.post("http://localhost:4001/events", req.body).catch(e => {
         console.log("4001'e istek başarısız")
     });
-    axios.post("http://localhost:4002/events", req.body);
-    res.end("OK").catch(e => {
+    axios.post("http://localhost:4002/events", req.body).catch(e => {
         console.log("4002'e istek başarısız")
     });
+    axios.post("http://localhost:4004/events", req.body).catch(e => {
+        console.log("4003'e istek başarısız")
+    });
+
+    res.end("OK")
 });
 
 
